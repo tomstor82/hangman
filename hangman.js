@@ -223,6 +223,7 @@ function rightAnswer(key, points) {
 		if (round % 5 === 0 && level === 4) {	// Stops game after 5 successful rounds at level 4
 			setTimeout(function() {
 				alert("AMAZING! YOU MIGHT AS WELL TOSS YOUR DICTIONARY.");
+				prompt("Highscore name?");
 				//games = 0;	//******************************************************************** IS THIS NEEDED WITH A PAGE RELOAD?
 				window.location.reload(false)
 			}, 3000);
@@ -309,6 +310,7 @@ function drawShape(clear) {
 		ctx.lineTo(273, 256);	// Left hand
 
 		setTimeout(function() {
+			prompt("Highscore Name");
 			window.location.reload(false);
 		}, 5000);
 	}
