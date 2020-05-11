@@ -31,7 +31,11 @@ ajaxRequest("words.xml");
 
 function detectMob() {
 	const toMatch = [ /Android/i, /webOS/i, /iPhone/i, /iPad/i, /iPod/i, /BlackBerry/i, /Windows Phone/i ];
-	return toMatch.some((toMatchItem) => { return navigator.userAgent.match(toMatchItem); });
+	var devWidth = window.screen.width;
+	// For high resolution devices disable the message as they might have physical keyboards
+	if (devWidth < 1280) {
+		return toMatch.some((toMatchItem) => { return navigator.userAgent.match(toMatchItem); });
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -54,13 +58,27 @@ var hiddenIndexArray = [];
 var guessWordArray = [];
 var hiddenLettersArray = [];
 var inputArray = [];
-var word, hideLetters, guessWord, wordLength, currentKey, level, pressed, ctx, keyNum, foundKey, inputKey;
+var word, hideLetters, guessWord, wordLength, currentKey, level, pressed, ctx, keyNum, foundKey, inputKey, name;
 var previousKey = 0;
 var round = 0;
 var result = 0;
 var wrong = 0;
 var mobAlert = false;
-
+/////////////////////////////////////////////////////////////////////////
+// Higscore object
+/*
+// Constructor
+function highScore(name, result) {
+	this.name = name;
+	this.result = result;
+	this.printScore = printScore;
+}
+// Method
+function printscore() {
+	var score_line = this.result + " " + this.name + "\n";
+}
+// Instigator
+name = new highScore(name, result);*/
 /////////////////////////////////////////////////////////////////////////
 // Select level
 function initiate(x) {
@@ -223,7 +241,7 @@ function rightAnswer(key, points) {
 		if (round % 5 === 0 && level === 4) {	// Stops game after 5 successful rounds at level 4
 			setTimeout(function() {
 				alert("AMAZING! YOU MIGHT AS WELL TOSS YOUR DICTIONARY.");
-				prompt("Highscore name?");
+				name = prompt("Highscore name?");
 				//games = 0;	//******************************************************************** IS THIS NEEDED WITH A PAGE RELOAD?
 				window.location.reload(false)
 			}, 3000);
@@ -310,7 +328,7 @@ function drawShape(clear) {
 		ctx.lineTo(273, 256);	// Left hand
 
 		setTimeout(function() {
-			prompt("Highscore Name");
+			name = prompt("Highscore Name");
 			window.location.reload(false);
 		}, 5000);
 	}
