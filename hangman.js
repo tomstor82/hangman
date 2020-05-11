@@ -65,7 +65,18 @@ var result = 0;
 var wrong = 0;
 var mobAlert = false;
 /////////////////////////////////////////////////////////////////////////
-// Higscore object
+// Higscore
+/*function highScore(name, result) {
+	let ranking = [5];
+	let scoreName = result + " - " + name + "\n";
+	
+
+scoreArray.sort(numberCompare);
+	
+// Compare numbers to help the sort method
+function numberCompare(a, b) {
+	return a-b;
+}*/
 /*
 // Constructor
 function highScore(name, result) {
