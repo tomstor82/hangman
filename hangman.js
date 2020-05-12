@@ -67,7 +67,7 @@ var mobAlert = false;
 /////////////////////////////////////////////////////////////////////////
 // Higscore
 function highScore(score, name) {
-	var line = score + name;
+	var line = score + name + "<br />\n";
 	for (var i=0; i<highScoreArray.length; i++) {	// Search the array
 		if (score > parseInt(highScoreArray[i])) break;	// Check the numbers in the array against the score
 	}
@@ -164,7 +164,7 @@ function checkAnswer(inputKey) {
 		points = -1;
 		wrong++;
 		//console.log("Found "+foundLetters + " correct letters\n" +"number of wrong answers " +wrong+"\n");
-		score(points);//document.getElementById("score").innerHTML = "Score:<br />" + score(points);
+		document.getElementById("score").innerHTML = "Score:<br />" + score(points);
 //console.log("initial points "+points+"\n");
 		wrongAnswer(wrong, points);
 	}
@@ -172,7 +172,7 @@ function checkAnswer(inputKey) {
 	else {
 		foundLetters = false;
 		points = 1;	// Number of right answers
-		score(points);//document.getElementById("score").innerHTML = "Score:<br />" + score(points);
+		document.getElementById("score").innerHTML = "Score:<br />" + score(points);
 //console.log("initial points "+points+"\n");
 		rightAnswer(key, points);
 	}
@@ -186,8 +186,8 @@ function score(points) {
 	result += (points*10*level);
 	//previousRound = round;
 	previousPoints = points;
-	console.log("Game level "+level + ", key Number is: "+keyNum +", game results = " + (level*round*10) + ", round points = " + points + ", score "+ result + ", round number "+round +"\n");
-	return document.getElementById("score").innerHTML = "Score:<br />" + result;
+	/*console.log("Game level "+level + ", key Number is: "+keyNum +", game results = " + (level*round*10) + ", round points = " + points + ", score "+ result + ", round number "+round +"\n");*/
+	return result; /*document.getElementById("score").innerHTML = "Score:<br />" + result;*/
 }
 ////////////////////////////////////////////////////////////////////////////
 // Wrong answer
@@ -241,6 +241,7 @@ function rightAnswer(key, points) {
 			setTimeout(function() {
 				alert("AMAZING! YOU MIGHT AS WELL TOSS YOUR DICTIONARY.");
 				name = prompt("Highscore name?");
+				if (name > 0) alert(highScore(score(points), name));
 				//games = 0;	//******************************************************************** IS THIS NEEDED WITH A PAGE RELOAD?
 				window.location.reload(false)
 			}, 3000);
@@ -328,6 +329,7 @@ function drawShape(clear) {
 
 		setTimeout(function() {
 			name = prompt("Highscore Name");
+			if (name > 0) alert(highScore(score(points), name));
 			window.location.reload(false);
 		}, 5000);
 	}
