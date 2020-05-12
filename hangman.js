@@ -66,30 +66,18 @@ var wrong = 0;
 var mobAlert = false;
 /////////////////////////////////////////////////////////////////////////
 // Higscore
-/*function highScore(name, result) {
-	let ranking = [5];
-	let scoreName = result + " - " + name + "\n";
-	
-
-scoreArray.sort(numberCompare);
-	
-// Compare numbers to help the sort method
-function numberCompare(a, b) {
-	return a-b;
-}*/
-/*
-// Constructor
-function highScore(name, result) {
-	this.name = name;
-	this.result = result;
-	this.printScore = printScore;
+function highScore(score, name) {
+	var line = score + name;
+	for (var i=0; i<highScoreArray.length; i++) {	// Search the array
+		if (score > parseInt(highScoreArray[i])) break;	// Check the numbers in the array against the score
+	}
+	if (i < 4) highScoreArray.splice(i, 0, line);	// Adds current player to the array if above 5th place
+	/*for (var s=0; s<highScoreArray.length; s++) {	// Shift lower scores down the array
+		highScoreArray[s+i] = highScoreArray[s+i++];
+	}
+	highScoreArray[i] = score + " - " + name;	// Add the new score to the array index*/
+	if (highScoreArray.length > 4) highScoreArray.splice(5, 1); // Remove element from array if more than 5 scores
 }
-// Method
-function printscore() {
-	var score_line = this.result + " " + this.name + "\n";
-}
-// Instigator
-name = new highScore(name, result);*/
 /////////////////////////////////////////////////////////////////////////
 // Select level
 function initiate(x) {
