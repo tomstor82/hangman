@@ -58,26 +58,12 @@ var hiddenIndexArray = [];
 var guessWordArray = [];
 var hiddenLettersArray = [];
 var inputArray = [];
-var word, hideLetters, guessWord, wordLength, currentKey, level, pressed, ctx, keyNum, foundKey, inputKey, name;
+var word, hideLetters, guessWord, wordLength, currentKey, level, pressed, ctx, keyNum, foundKey, inputKey, name, points, finalResult;
 var previousKey = 0;
 var round = 0;
 var result = 0;
 var wrong = 0;
 var mobAlert = false;
-/////////////////////////////////////////////////////////////////////////
-// Higscore
-function highScore(score, name) {
-	var line = score + name + "<br />\n";
-	for (var i=0; i<highScoreArray.length; i++) {	// Search the array
-		if (score > parseInt(highScoreArray[i])) break;	// Check the numbers in the array against the score
-	}
-	if (i < 4) highScoreArray.splice(i, 0, line);	// Adds current player to the array if above 5th place
-	/*for (var s=0; s<highScoreArray.length; s++) {	// Shift lower scores down the array
-		highScoreArray[s+i] = highScoreArray[s+i++];
-	}
-	highScoreArray[i] = score + " - " + name;	// Add the new score to the array index*/
-	if (highScoreArray.length > 4) highScoreArray.splice(5, 1); // Remove element from array if more than 5 scores
-}
 /////////////////////////////////////////////////////////////////////////
 // Select level
 function initiate(x) {
@@ -149,7 +135,7 @@ function startGame() {
 //////////////////////////////////////////////////////////////////////////
 // Check answers
 function checkAnswer(inputKey) {
-	let points = 0;
+	points = 0;
 	let key = inputKey.toLowerCase();
 	let foundLetters = false;
 	for (let i = 0; i < hiddenLettersArray.length; i++) {	// Checking if key input is in hiddenLettersArray and if found adds increments to foundLetters
@@ -165,6 +151,7 @@ function checkAnswer(inputKey) {
 		wrong++;
 		//console.log("Found "+foundLetters + " correct letters\n" +"number of wrong answers " +wrong+"\n");
 		document.getElementById("score").innerHTML = "Score:<br />" + score(points);
+		finalResult = result;	// Saves the result before it gets zeroed at game end for use with highscore
 //console.log("initial points "+points+"\n");
 		wrongAnswer(wrong, points);
 	}
@@ -173,6 +160,7 @@ function checkAnswer(inputKey) {
 		foundLetters = false;
 		points = 1;	// Number of right answers
 		document.getElementById("score").innerHTML = "Score:<br />" + score(points);
+		finalResult = result;	// Saves the result before it gets zeroed at game end for use with highscore
 //console.log("initial points "+points+"\n");
 		rightAnswer(key, points);
 	}
@@ -190,6 +178,20 @@ function score(points) {
 	return result; /*document.getElementById("score").innerHTML = "Score:<br />" + result;*/
 }
 ////////////////////////////////////////////////////////////////////////////
+// Higscore
+function highScore(name) {
+	var highScoreArray = [5];
+	var line = finalResult + " POINTS" + "  " + name.toUpperCase() + "\n";
+	for (var i=0; i<highScoreArray.length; i++) {	// Search the array
+		if (result > parseInt(highScoreArray[i])) break;	// Check the numbers in the array against the score
+	}
+	if (i < 4) highScoreArray.splice(i, 0, line);	// Adds current player to the array if above 5th place
+	if (highScoreArray.length > 4) highScoreArray.splice(5, 1); // Remove element from array if more than 5 scores
+	for (var ii=0; ii<highScoreArray.length; ii++) {
+		return highScoreArray[i];
+	}
+}
+/////////////////////////////////////////////////////////////////////////
 // Wrong answer
 function wrongAnswer(wrong, points) {
 	//document.getElementById("score").innerHTML = "Score:<br />" + score(0);
@@ -241,7 +243,7 @@ function rightAnswer(key, points) {
 			setTimeout(function() {
 				alert("AMAZING! YOU MIGHT AS WELL TOSS YOUR DICTIONARY.");
 				name = prompt("Highscore name?");
-				if (name > 0) alert(highScore(score(points), name));
+				alert(highScore(name));
 				//games = 0;	//******************************************************************** IS THIS NEEDED WITH A PAGE RELOAD?
 				window.location.reload(false)
 			}, 3000);
@@ -329,7 +331,7 @@ function drawShape(clear) {
 
 		setTimeout(function() {
 			name = prompt("Highscore Name");
-			if (name > 0) alert(highScore(score(points), name));
+			alert(highScore(name));
 			window.location.reload(false);
 		}, 5000);
 	}
