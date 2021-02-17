@@ -25,13 +25,36 @@ function getWord() {
 
 ajaxCallback = getWord;
 ajaxRequest("words.xml");
-
+////////////////////////////////////////////////////////////////////////
+// My background color button
+window.addEventListener("load", function() {
+	var theme = document.getElementById("theme");
+	theme.addEventListener("mousedown", function() {
+		var bgColor = document.body.style.backgroundColor;
+		var color = document.body.style.color;
+		if (bgColor === "green") {
+			document.body.style.backgroundColor = "black";
+			document.body.style.color = "grey";
+		}
+		else if (bgColor === "black") {
+			document.body.style.backgroundColor = "white";
+			document.body.style.color = "black";
+		}
+		else if (bgColor === "white") document.body.style.backgroundColor = "#FF7F00";
+		else document.body.style.backgroundColor = "green";
+		console.log(bgColor);
+	});
+});
 ////////////////////////////////////////////////////////////////////////
 // Check for mobile browser to display prompt
 
 function detectMob() {
 	const toMatch = [ /Android/i, /webOS/i, /iPhone/i, /iPad/i, /iPod/i, /BlackBerry/i, /Windows Phone/i ];
-	return toMatch.some((toMatchItem) => { return navigator.userAgent.match(toMatchItem); });
+	var devWidth = window.screen.width;
+	// For high resolution devices disable the message as they might have physical keyboards
+	if (devWidth < 1280) {
+		return toMatch.some((toMatchItem) => { return navigator.userAgent.match(toMatchItem); });
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -45,6 +68,10 @@ $(".link")
 .mouseenter(function(e) { $(this).css( { color: "red" } ); })
 .mouseleave(function(e) { $(this).css( { color: "blue" } ); });
 
+/*$("#theme")
+
+.click(function() { $("body").css( { backgroundcolor: "black" } ); });*/
+
 });
 
 ////////////////////////////////////////////////////////////////////////
@@ -54,13 +81,12 @@ var hiddenIndexArray = [];
 var guessWordArray = [];
 var hiddenLettersArray = [];
 var inputArray = [];
-var word, hideLetters, guessWord, wordLength, currentKey, level, pressed, ctx, keyNum, foundKey, inputKey;
+var word, hideLetters, guessWord, wordLength, currentKey, level, pressed, ctx, keyNum, foundKey, inputKey, name, points, finalResult;
 var previousKey = 0;
 var round = 0;
 var result = 0;
 var wrong = 0;
 var mobAlert = false;
-
 /////////////////////////////////////////////////////////////////////////
 // Select level
 function initiate(x) {
@@ -94,10 +120,10 @@ function makeWord(wordLength, hideLetters) {
 	}
 	guessWordArray = word.split("");	// makes word string into array
 	for (let i = 0; i < hiddenIndexArray.length; i++) {
-		guessWordArray[hiddenIndexArray[i]] = "_";	// Puts blank spaces where hidden index array indicates
+		guessWordArray[hiddenIndexArray[i]] = "_";	// Puts underscore where hidden index array indicates
 	}
 	let firstWord = guessWordArray.toString();	// Guess word array becomes string
-	guessWord = firstWord.replace(/,/g, " ");	// Removes commas from string. They appear when converting array to string
+	guessWord = firstWord.replace(/,/g, " ");	// Replaces commas /,/ with space " " g = globally in the string. Commas appear when converting array into string
 	startGame();
 }
 //////////////////////////////////////////////////////////////////////////
@@ -114,15 +140,16 @@ function startGame() {
 		currentKey = Date.now();
 		if (previousKey === 0 || (currentKey - previousKey) > 400) {	// If no previous key presses
 			if (!event) event = window.event;	// if not event alas IE, event becomes window.event
-			foundKey = false;
+			//foundKey = false;
 			inputKey = event.key;
 			keyNum++;	// increase index in input array for storing keys to avoid them being recorded twice as score
 		}
+		foundKey = inputArray.includes(inputKey);/*
 		for (let i = 0; i < inputArray.length; i++) {	// Search input array for current key pressed
 			if (inputKey === inputArray[i]) foundKey = true;
-		}
+		}*/
 		inputArray[keyNum-1] = inputKey;
-		if (foundKey === false && (/^([a-z0-9]{1,1})$/.test(inputKey) === true)) {
+		if (foundKey === false && (/^[a-z]$/i.test(inputKey) === true)) {	// test if inputKey is single alphacharacter i = ignoring case. ^ indicates start $ stop to limit to one char
 			pressed.style.display = "block";
 			pressed.lastChild.innerHTML += inputKey + " ";
 			checkAnswer(inputKey);
@@ -132,22 +159,24 @@ function startGame() {
 //////////////////////////////////////////////////////////////////////////
 // Check answers
 function checkAnswer(inputKey) {
-	let points = 0;
+	points = 0;
 	let key = inputKey.toLowerCase();
-	let foundLetters = false;
-	for (let i = 0; i < hiddenLettersArray.length; i++) {	// Checking if key input is in hiddenLettersArray and if found adds increments to foundLetters
+	//let foundLetters = false;
+	let foundLetters = hiddenLettersArray.includes(key);
+	/*for (let i = 0; i < hiddenLettersArray.length; i++) {	// Checking if key input is in hiddenLettersArray and if found adds increments to foundLetters
 		if (key === hiddenLettersArray[i]) {
 			foundLetters = true;
 			//console.log("Found "+foundLetters +" correct letters\n");
 		}
-	}
+	}*/
 	previousKey = currentKey;	// Highly important to measure time between key press to avoid unintentional triggering of wrong counter
 	// Wrong answer
 	if (foundLetters === false) {
 		points = -1;
 		wrong++;
 		//console.log("Found "+foundLetters + " correct letters\n" +"number of wrong answers " +wrong+"\n");
-		score(points);//document.getElementById("score").innerHTML = "Score:<br />" + score(points);
+		document.getElementById("score").innerHTML = "Score:<br />" + score(points);
+		finalResult = result;	// Saves the result before it gets zeroed at game end for use with highscore
 //console.log("initial points "+points+"\n");
 		wrongAnswer(wrong, points);
 	}
@@ -155,7 +184,8 @@ function checkAnswer(inputKey) {
 	else {
 		foundLetters = false;
 		points = 1;	// Number of right answers
-		score(points);//document.getElementById("score").innerHTML = "Score:<br />" + score(points);
+		document.getElementById("score").innerHTML = "Score:<br />" + score(points);
+		finalResult = result;	// Saves the result before it gets zeroed at game end for use with highscore
 //console.log("initial points "+points+"\n");
 		rightAnswer(key, points);
 	}
@@ -169,10 +199,24 @@ function score(points) {
 	result += (points*10*level);
 	//previousRound = round;
 	previousPoints = points;
-	console.log("Game level "+level + ", key Number is: "+keyNum +", game results = " + (level*round*10) + ", round points = " + points + ", score "+ result + ", round number "+round +"\n");
-	return document.getElementById("score").innerHTML = "Score:<br />" + result;
+	/*console.log("Game level "+level + ", key Number is: "+keyNum +", game results = " + (level*round*10) + ", round points = " + points + ", score "+ result + ", round number "+round +"\n");*/
+	return result; /*document.getElementById("score").innerHTML = "Score:<br />" + result;*/
 }
 ////////////////////////////////////////////////////////////////////////////
+// Higscore
+function highScore(name) {
+	var highScoreArray = [5];
+	var line = finalResult + " POINTS" + "  " + name.toUpperCase() + "\n";
+	for (var i=0; i<highScoreArray.length; i++) {	// Search the array
+		if (result > parseInt(highScoreArray[i])) break;	// Check the numbers in the array against the score
+	}
+	if (i < 4) highScoreArray.splice(i, 0, line);	// Adds current player to the array if above 5th place
+	if (highScoreArray.length > 4) highScoreArray.splice(5, 1); // Remove element from array if more than 5 scores
+	for (var ii=0; ii<highScoreArray.length; ii++) {
+		return highScoreArray[i];
+	}
+}
+/////////////////////////////////////////////////////////////////////////
 // Wrong answer
 function wrongAnswer(wrong, points) {
 	//document.getElementById("score").innerHTML = "Score:<br />" + score(0);
@@ -223,6 +267,8 @@ function rightAnswer(key, points) {
 		if (round % 5 === 0 && level === 4) {	// Stops game after 5 successful rounds at level 4
 			setTimeout(function() {
 				alert("AMAZING! YOU MIGHT AS WELL TOSS YOUR DICTIONARY.");
+				name = prompt("Highscore name?");
+				alert(highScore(name));
 				//games = 0;	//******************************************************************** IS THIS NEEDED WITH A PAGE RELOAD?
 				window.location.reload(false)
 			}, 3000);
@@ -309,6 +355,8 @@ function drawShape(clear) {
 		ctx.lineTo(273, 256);	// Left hand
 
 		setTimeout(function() {
+			name = prompt("Highscore Name");
+			alert(highScore(name));
 			window.location.reload(false);
 		}, 5000);
 	}
@@ -319,3 +367,4 @@ function drawShape(clear) {
 	ctx.stroke();
 	setTimeout(function() { startGame()}, 3000);
 }
+

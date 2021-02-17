@@ -1,5 +1,5 @@
 <!DOCTYPE=html>
-<html lang="en">
+<html lang="en"><!-- Created by Tom Storebø 3rd of May 2020 -->
 	<head>
 		<title>Hangman game</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -14,6 +14,33 @@
 				font-family: 'Permanent Marker', cursive;
 				font-size: 200%;
 				text-align: center;
+			}
+			#theme {
+				float: left;
+				font-size: 50%;
+				padding: 5px 10px 5px 10px;
+				margin: -1% 0 0 1%;
+				box-shadow: 1px 1px 1px 2px black;/*, 1px -1px 1px 2px black, -1px 1px 1px 2px black, -1px -1px 1px 2px black;*/
+			}
+			#theme:hover {
+				animation-name: button;
+				animation-duration: 500ms;
+				animation-fill-mode: forwards;
+				cursor: pointer;
+			}
+			@keyframes button {
+				100% {
+					color: red;
+					box-shadow: none;
+					border: 1px solid black;
+					transform: scale(0.9);
+				}
+			}
+			#theme:active {
+				transform: scale(0.8);
+				box-shadow: none;
+				border: 1px solid black;
+				color: red;
 			}
 			ul {
 				position: absolute;
@@ -51,6 +78,7 @@
 	</head>
 	<body>
 		<article>
+			<div id="theme">Theme</div>
 			<header>
 				<h1>Let's do our best to stop this hanging!</h1>
 				<h4>The judge being quite illiteral now offers freedom for sorting these words out. Ready?</h4>
@@ -61,7 +89,7 @@
 						<li class="link" onclick="initiate(2)">Even Stewen</li>
 						<li class="link" onclick="initiate(3)">Unreal</li>
 						<li class="link" onclick="initiate(4)">Extra terrestrial</li><br />
-						<li class="link" onclick="initiate(0)">Math quiz</li>
+						<!--<li class="link" onclick="initiate(0)">Math quiz</li>-->
 					</ul>
 				</div>
 				<canvas id="canvas" width ="300" height ="400"></canvas>
